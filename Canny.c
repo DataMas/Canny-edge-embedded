@@ -5,41 +5,24 @@
 
 #define N 420 /* frame dimension for QCIF format */
 #define M 280 /* frame dimension for QCIF format */
-#define s 2   /*scaling factor*/
-
-#define W 420 /* width of current frame [pixels] */
-#define H 280 /* height of current frame [pixels] */
+//#define s 2   /*scaling factor*/
 
 #define filename "bus_420x280.yuv"
-#define file_yuv "test_480x280.yuv"
+#define file_yuv "test_420x280.yuv"
 
 /* code for armulator*/
 // declare variables
 #pragma arm section zidata="ram"
-int current[N][M],gaussianMask[5][5];
-int temp[N+2][M+2];
-double conV[N][M],conH[N][M],con2[N][M];
-int final[N*s][M*s];
-int output[N][M];
+int current[M][N];
+int output[M][N];
 
-int current_y[N][M];
-int current_u[N/2][M/2];
-int current_v[N/2][M/2];
 #pragma arm section
 
-// declare more variables
+int i, j, newPixel, row, col, kernelRow, kernelCol;
+int gaussianMask[5][5];
+int kernelSize = 5;
 
-int i,j,k,kernelRow,kernelCol,kernelWeight;
-unsigned int row, col;	// Pixel's row and col positions
-int rowOffset;			// Row offset from the current pixel
-int colOffset;			// Col offset from the current pixel
-int kernelSize = 5;		// Size of Gaussin blur kernel
-int SxMask[3][3];		// Sobel mask in the x direction
-int SyMask[3][3];		// Sobel mask in the y direction
-//int gaussianMask[5][5];	// Gaussian mask
-int newPixel;			// Sum pixel values for gaussian
-		// Output image from every step
-
+// ===================================================== 
 // read image
 void read()
 {
@@ -50,11 +33,11 @@ void read()
     exit(-1);
   }
 
-  for(i=0;i<N;i++)
+  for(i=0;i<M;i++)
   {
-    for(j=0;j<M;j++)
+    for(j=0;j<N;j++)
     {
-      current_y[i][j]=fgetc(frame_c);
+      current[i][j]=fgetc(frame_c);
     }
   }
 
@@ -67,44 +50,21 @@ void write()
   FILE *frame_yuv;
   frame_yuv=fopen(file_yuv,"wb");
 
-  for(i=0;i<N;i++)
+  for(i=0;i<M;i++)
   {
-    for(j=0;j<M;j++)
+    for(j=0;j<N;j++)
     {
-      fputc(current_y[i][j],frame_yuv);
+      fputc(output[i][j],frame_yuv);
     }
   }
  
   fclose(frame_yuv);
 }
+
+// ===================================================== 
 void canny()
 {
-
- for(i=0;i<(N+2);++i)
- {
-   for(j=0;j<(M+2);++j)
-   {
-     temp[i][j]=0;
-   }
-  }
-
-  for(i=1;i<(N+1);++i)
-  {
-    for(j=1;j<(M+1);++j)
-    {
-      temp[i][j]=current_y[i-1][j-1];
-    }
-  }
-   
-	// Declare Sobel masks 
-	SxMask[0][0] = -1; SxMask[0][1] = 0; SxMask[0][2] = 1;
-	SxMask[1][0] = -2; SxMask[1][1] = 0; SxMask[1][2] = 2;
-	SxMask[2][0] = -1; SxMask[2][1] = 0; SxMask[2][2] = 1;
-	
-	SyMask[0][0] =  1; SyMask[0][1] =  2; SyMask[0][2] =  1;
-	SyMask[1][0] =  0; SyMask[1][1] =  0; SyMask[1][2] =  0;
-	SyMask[2][0] = -1; SyMask[2][1] = -2; SyMask[2][2] = -1;
-	
+	printf("ok");
 	// Declare Gaussian mask 
 	gaussianMask[0][0] = 2;	 gaussianMask[0][1] = 4;  gaussianMask[0][2] = 5;  gaussianMask[0][3] = 4;  gaussianMask[0][4] = 2;	
 	gaussianMask[1][0] = 4;	 gaussianMask[1][1] = 9;  gaussianMask[1][2] = 12; gaussianMask[1][3] = 9;  gaussianMask[1][4] = 4;	
@@ -112,27 +72,31 @@ void canny()
 	gaussianMask[3][0] = 4;	 gaussianMask[3][1] = 9;  gaussianMask[3][2] = 12; gaussianMask[3][3] = 9;  gaussianMask[3][4] = 4;	
 	gaussianMask[4][0] = 2;	 gaussianMask[4][1] = 4;  gaussianMask[4][2] = 5;  gaussianMask[4][3] = 4;  gaussianMask[4][4] = 2;	
 	
-	// Gaussian blur 
 	int limit = (int) floor(kernelSize/2);
-	for (row = limit; row < (W-limit); row++) {
-		for (col = limit; col < (W-limit); col++) {
+	
+	for (row=limit;row<=(M-limit);row++){
+		for (col=limit;col<=(N-limit);col++){
 			newPixel = 0;
-			for (kernelRow=-limit;kernelRow<=limit;kernelRow++) {
-				for (kernelCol=-limit;kernelCol<=limit;kernelCol++) {
-					
-					newPixel = newPixel + gaussianMask[limit+kernelRow][limit+kernelCol]*temp[row+kernelRow][col+kernelCol];
+			//printf("%d",row);
+			for (kernelRow=-limit; kernelRow<=limit; kernelRow++){
+				for (kernelCol=-limit;kernelCol<=limit; kernelCol++){
+					newPixel = newPixel + current[row+kernelRow][col+kernelCol]*gaussianMask[limit+kernelRow][limit+kernelCol];
 				}
 			}
-		output[row][col] = (int)(round(newPixel/kernelWeight));
+			output[row][col] = (int)(round(newPixel)/159);
 		}
 	}
 	
-	// Find gradients using Sobel masks 
- 
+printf("ok");
 }
 
 int main() {
+
   read();
+
   canny();
+  
   write();
+
+  
 }
