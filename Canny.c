@@ -3,31 +3,36 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define N 144 /* frame dimension for QCIF format */
-#define M 176 /* frame dimension for QCIF format */
+#define N 420 /* frame dimension for QCIF format */
+#define M 280 /* frame dimension for QCIF format */
 #define s 2   /*scaling factor*/
 
-#define W 144 /* width of current frame [pixels] */
-#define H 176 /* height of current frame [pixels] */
+#define W 420 /* width of current frame [pixels] */
+#define H 280 /* height of current frame [pixels] */
 
 /* code for armulator*/
 // declare variables
 #pragma arm section zidata="ram"
-int data[N][M];
+int current[N][M],gaussianMask[5][5];
+int temp[N+2][M+2];
 double conV[N][M],conH[N][M],con2[N][M];
 int final[N*s][M*s];
+
+int current_y[N][M];
+int current_u[N/2][M/2];
+int current_v[N/2][M/2];
 #pragma arm section
 
 // declare more variables
 
-int i,j,k,kernelRow,kernelCol;
+int i,j,k,kernelRow,kernelCol,kernelWeight;
 unsigned int row, col;	// Pixel's row and col positions
 int rowOffset;			// Row offset from the current pixel
 int colOffset;			// Col offset from the current pixel
 int kernelSize = 5;		// Size of Gaussin blur kernel
 int SxMask[3][3];		// Sobel mask in the x direction
 int SyMask[3][3];		// Sobel mask in the y direction
-int gaussianMask[5][5];	// Gaussian mask
+//int gaussianMask[5][5];	// Gaussian mask
 int newPixel;			// Sum pixel values for gaussian
 int output[W][H];		// Output image from every step
 
@@ -35,7 +40,7 @@ int output[W][H];		// Output image from every step
 void read()
 {
   FILE *frame_c;
-  if((frame_c=fopen("akiyo1.y","rb"))==NULL)
+  if((frame_c=fopen('bus_420x280.y',"rb"))==NULL)
   {
     printf("current frame doesn't exist\n");
     exit(-1);
@@ -45,14 +50,46 @@ void read()
   {
     for(j=0;j<M;j++)
     {
-      data[i][j]=fgetc(frame_c);
+      current_y[i][j]=fgetc(frame_c);
     }
   }
+  for(i=0;i<N/2;i++)
+  {
+    for(j=0;j<M/2;j++)
+    {
+      current_u[i][j]=fgetc(frame_c);
+    }
+  }
+  for(i=0;i<N/2;i++)
+  {
+    for(j=0;j<M/2;j++)
+    {
+      current_v[i][j]=fgetc(frame_c);
+    }
+  }
+  fclose(frame_c);
 }
 
-void canny() {
-	
-	/* Declare Sobel masks */
+void canny()
+{
+
+ for(i=0;i<(N+2);++i)
+ {
+   for(j=0;j<(M+2);++j)
+   {
+     temp[i][j]=0;
+   }
+  }
+
+  for(i=1;i<(N+1);++i)
+  {
+    for(j=1;j<(M+1);++j)
+    {
+      temp[i][j]=current[i-1][j-1];
+    }
+  }
+   
+	// Declare Sobel masks 
 	SxMask[0][0] = -1; SxMask[0][1] = 0; SxMask[0][2] = 1;
 	SxMask[1][0] = -2; SxMask[1][1] = 0; SxMask[1][2] = 2;
 	SxMask[2][0] = -1; SxMask[2][1] = 0; SxMask[2][2] = 1;
@@ -61,14 +98,14 @@ void canny() {
 	SyMask[1][0] =  0; SyMask[1][1] =  0; SyMask[1][2] =  0;
 	SyMask[2][0] = -1; SyMask[2][1] = -2; SyMask[2][2] = -1;
 	
-	/* Declare Gaussian mask */
+	// Declare Gaussian mask 
 	gaussianMask[0][0] = 2;	 gaussianMask[0][1] = 4;  gaussianMask[0][2] = 5;  gaussianMask[0][3] = 4;  gaussianMask[0][4] = 2;	
 	gaussianMask[1][0] = 4;	 gaussianMask[1][1] = 9;  gaussianMask[1][2] = 12; gaussianMask[1][3] = 9;  gaussianMask[1][4] = 4;	
 	gaussianMask[2][0] = 5;	 gaussianMask[2][1] = 12; gaussianMask[2][2] = 15; gaussianMask[2][3] = 12; gaussianMask[2][4] = 2;	
 	gaussianMask[3][0] = 4;	 gaussianMask[3][1] = 9;  gaussianMask[3][2] = 12; gaussianMask[3][3] = 9;  gaussianMask[3][4] = 4;	
 	gaussianMask[4][0] = 2;	 gaussianMask[4][1] = 4;  gaussianMask[4][2] = 5;  gaussianMask[4][3] = 4;  gaussianMask[4][4] = 2;	
 	
-	/* Gaussian blur */
+	// Gaussian blur 
 	int limit = (int) floor(kernelSize/2);
 	for (row = limit; row < (W-limit); row++) {
 		for (col = limit; col < (W-limit); col++) {
@@ -76,13 +113,18 @@ void canny() {
 			for (kernelRow=-limit;kernelRow<limit;kernelRow++) {
 				for (kernelCol=-limit;kernelCol<limit;kernelCol++) {
 					
-					newPixel = newPixel + gaussianMask[limit+kernelRow,limit+kernelCol]*data[row+kernelRow,col+kernelCol];
+					newPixel = newPixel + gaussianMask[limit+kernelRow][limit+kernelCol]*current[row+kernelRow][col+kernelCol];
 				}
 			}
-		output[row,col] = (int)(round(newPixel/kernelWeight));
+		output[row][col] = (int)(round(newPixel/kernelWeight));
 		}
 	}
 	
-	/* Find gradients using Sobel masks */
-	
+	// Find gradients using Sobel masks 
+ 
+}
+
+int main() {
+  read();
+  canny();
 }
