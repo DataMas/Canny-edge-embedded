@@ -113,7 +113,7 @@ void canny()
 			for (kernelRow=-limit;kernelRow<limit;kernelRow++) {
 				for (kernelCol=-limit;kernelCol<limit;kernelCol++) {
 					
-					newPixel = newPixel + gaussianMask[limit+kernelRow][limit+kernelCol]*current[row+kernelRow][col+kernelCol];
+					newPixel = newPixel + gaussianMask[limit+kernelRow][limit+kernelCol]*temp[row+kernelRow][col+kernelCol];
 				}
 			}
 		output[row][col] = (int)(round(newPixel/kernelWeight));
