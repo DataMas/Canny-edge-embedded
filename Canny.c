@@ -10,6 +10,9 @@
 #define W 420 /* width of current frame [pixels] */
 #define H 280 /* height of current frame [pixels] */
 
+#define filename "bus_420x280.yuv"
+#define file_yuv "test_480x280.yuv"
+
 /* code for armulator*/
 // declare variables
 #pragma arm section zidata="ram"
@@ -17,6 +20,7 @@ int current[N][M],gaussianMask[5][5];
 int temp[N+2][M+2];
 double conV[N][M],conH[N][M],con2[N][M];
 int final[N*s][M*s];
+int output[N][M];
 
 int current_y[N][M];
 int current_u[N/2][M/2];
@@ -34,13 +38,13 @@ int SxMask[3][3];		// Sobel mask in the x direction
 int SyMask[3][3];		// Sobel mask in the y direction
 //int gaussianMask[5][5];	// Gaussian mask
 int newPixel;			// Sum pixel values for gaussian
-int output[W][H];		// Output image from every step
+		// Output image from every step
 
 // read image
 void read()
 {
   FILE *frame_c;
-  if((frame_c=fopen('bus_420x280.y',"rb"))==NULL)
+  if((frame_c=fopen(filename,"rb"))==NULL)
   {
     printf("current frame doesn't exist\n");
     exit(-1);
@@ -53,23 +57,26 @@ void read()
       current_y[i][j]=fgetc(frame_c);
     }
   }
-  for(i=0;i<N/2;i++)
-  {
-    for(j=0;j<M/2;j++)
-    {
-      current_u[i][j]=fgetc(frame_c);
-    }
-  }
-  for(i=0;i<N/2;i++)
-  {
-    for(j=0;j<M/2;j++)
-    {
-      current_v[i][j]=fgetc(frame_c);
-    }
-  }
+
   fclose(frame_c);
 }
 
+//write image
+void write()
+{
+  FILE *frame_yuv;
+  frame_yuv=fopen(file_yuv,"wb");
+
+  for(i=0;i<N;i++)
+  {
+    for(j=0;j<M;j++)
+    {
+      fputc(current_y[i][j],frame_yuv);
+    }
+  }
+ 
+  fclose(frame_yuv);
+}
 void canny()
 {
 
@@ -85,7 +92,7 @@ void canny()
   {
     for(j=1;j<(M+1);++j)
     {
-      temp[i][j]=current[i-1][j-1];
+      temp[i][j]=current_y[i-1][j-1];
     }
   }
    
@@ -110,8 +117,8 @@ void canny()
 	for (row = limit; row < (W-limit); row++) {
 		for (col = limit; col < (W-limit); col++) {
 			newPixel = 0;
-			for (kernelRow=-limit;kernelRow<limit;kernelRow++) {
-				for (kernelCol=-limit;kernelCol<limit;kernelCol++) {
+			for (kernelRow=-limit;kernelRow<=limit;kernelRow++) {
+				for (kernelCol=-limit;kernelCol<=limit;kernelCol++) {
 					
 					newPixel = newPixel + gaussianMask[limit+kernelRow][limit+kernelCol]*temp[row+kernelRow][col+kernelCol];
 				}
@@ -127,4 +134,5 @@ void canny()
 int main() {
   read();
   canny();
+  write();
 }
