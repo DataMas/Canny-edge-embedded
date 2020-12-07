@@ -183,13 +183,14 @@ void sobel()
 	
 	for (i=2;i<=N*M;i++) {
 		*s = sqrt((*igx)*(*igx)+(*igy)*(*igy));
-		*o = sqrt((*igx)*(*igx)+(*igy)*(*igy));
+		*o = atan2(*igx,*igy)/3.14159 * 180;
 		
 		if(*s>=255)
 		{
 			*s = 255;
 		}
 		*s++ ;
+		*o++ ;
 		*igx++ ;
 		*igy++ ;
 	}
