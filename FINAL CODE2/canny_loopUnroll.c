@@ -46,9 +46,12 @@ void read()
 
   for(i=0;i<M;i++)
   {
-    for(j=0;j<N;j++)
+    for(j=0;j<N;j+=4)
     {
       current[i][j]=fgetc(frame_c);
+      current[i][j+1]=fgetc(frame_c);
+      current[i][j+2]=fgetc(frame_c);
+      current[i][j+3]=fgetc(frame_c);
     }
   }
 
@@ -83,9 +86,12 @@ void canny()
 
 for(i=0;i<(M+2);++i)
  {
-   for(j=0;j<(N+2);++j)
+   for(j=0;j<(N+2);j+=4)
    {
      temp[i][j]=0;
+     temp[i][j+1]=0;
+     temp[i][j+2]=0;
+     temp[i][j+3]=0;
    }
  }
 
@@ -94,6 +100,9 @@ for(i=0;i<(M+2);++i)
     for(j=1;j<(N+1);++j)
     {
       temp[i][j]=current[i-1][j-1];
+      temp[i][j+1]=current[i-1][j];
+      temp[i][j+2]=current[i-1][j+1];
+      temp[i][j+3]=current[i-1][j+2];
     }
   }
 
@@ -116,8 +125,7 @@ for(i=0;i<(M+2);++i)
 					newPixel2 = newPixel2 + temp[row+kernelRow+1][col+kernelCol]*gaussianMask[limit_gauss+kernelRow][limit_gauss+kernelCol];
 					newPixel3 = newPixel3 + temp[row+kernelRow+2][col+kernelCol]*gaussianMask[limit_gauss+kernelRow][limit_gauss+kernelCol];
 					newPixel4 = newPixel4 + temp[row+kernelRow+3][col+kernelCol]*gaussianMask[limit_gauss+kernelRow][limit_gauss+kernelCol];
-					//newPixel = newPixel + current[row+kernelRow][col+kernelCol+3]*gaussianMask[limit_gauss+kernelRow][limit_gauss+kernelCol+3];
-					//newPixel = newPixel + current[row+kernelRow][col+kernelCol+4]*gaussianMask[limit_gauss+kernelRow][limit_gauss+kernelCol+4];
+
 				}
 			}
 			output_gaussian[row][col] = (int)(floor(newPixel)/16);
@@ -140,6 +148,19 @@ void sobel()
 	GyMask[1][0] =  0; GyMask[1][1] =  0; GyMask[1][2] =  0;
 	GyMask[2][0] = -1; GyMask[2][1] = -2; GyMask[2][2] = -1;
 	
+	
+		/* This is for Gx */
+	for (col=limit;col<=(N+limit);col++){
+		for (row=limit;row<=(M+limit);row++){		
+			newPixel = 0;
+			for (kernelCol=-limit;kernelCol<=limit; kernelCol++){
+				for (kernelRow=-limit; kernelRow<=limit; kernelRow++){
+					newPixel = newPixel + output_gaussian[row+kernelRow][col+kernelCol]*GxMask[limit+kernelRow][limit+kernelCol];
+				}
+			}
+			Igx[row][col] = (int)(floor(newPixel));
+		}
+	}
 	/* This is for Gx */
 	for (col=limit;col<=(N+limit);col++){
 		for (row=limit;row<=(M+limit);row+=4){
@@ -175,9 +196,9 @@ void sobel()
 				for (kernelRow=-limit; kernelRow<=limit; kernelRow++){
 				
 					newPixel = newPixel + output_gaussian[row+kernelRow][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
-					newPixel = newPixel + output_gaussian[row+kernelRow+1][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
-					newPixel = newPixel + output_gaussian[row+kernelRow+2][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
-					newPixel = newPixel + output_gaussian[row+kernelRow+3][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
+					newPixel2 = newPixel2 + output_gaussian[row+kernelRow+1][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
+					newPixel3 = newPixel3 + output_gaussian[row+kernelRow+2][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
+					newPixel4 = newPixel4 + output_gaussian[row+kernelRow+3][col+kernelCol]*GyMask[limit+kernelRow][limit+kernelCol];
 				}
 			}
 			Igy[row][col] = (int)(floor(newPixel));
@@ -214,16 +235,16 @@ void sobel()
 			}
 		}
 	}
-	
+
 	for (col=limit;col<=(N+limit);col++){
-		for (row=limit;row<=(M+limit);row+=4){
-							
+		for (row=limit;row<=(M+limit);row++){
 			Eo[row][col] = (atan2(Igy[row][col],Igx[row][col])/3.14159) * 180.0;
-			Eo[row+1][col] = (atan2(Igy[row+1][col],Igx[row+1][col])/3.14159) * 180.0;
+			/*Eo[row+1][col] = (atan2(Igy[row+1][col],Igx[row+1][col])/3.14159) * 180.0;
 			Eo[row+2][col] = (atan2(Igy[row+2][col],Igx[row+2][col])/3.14159) * 180.0;
-			Eo[row+3][col] = (atan2(Igy[row+3][col],Igx[row+3][col])/3.14159) * 180.0;
+			Eo[row+3][col] = (atan2(Igy[row+3][col],Igx[row+3][col])/3.14159) * 180.0;*/
 		}
 	}
+
 }
 
 void nonSup() {
@@ -416,3 +437,4 @@ int main() {
 
   
 }
+
