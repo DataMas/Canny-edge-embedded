@@ -65,11 +65,11 @@ void write()
   {
     for(j=1;j<N+1;j++)
     { 
-	  if(i==1 || j==1 || i==M+1 || j==N+1)
-      {
-      fputc(0,frame_yuv);
-	  }
-	  else	
+	  //if(i==1 || j==1 || i==M || j==N)
+      //{
+      //fputc(0,frame_yuv);
+	  //}
+	  //else	
       fputc(Edges[i][j],frame_yuv);
     }
   }
@@ -85,7 +85,7 @@ for(i=0;i<(M+2);++i)
  {
    for(j=0;j<(N+2);++j)
    {
-     temp[i][j]=150;
+     temp[i][j]=0;
    }
  }
 
@@ -147,12 +147,12 @@ void sobel()
 			newPixel3 = 0;
 			newPixel4 = 0;
 			for (kernelRow=-limit; kernelRow<=limit; kernelRow++){
-				for (kernelCol=-limit;kernelCol<=limit; kernelCol+=4){
+				for (kernelCol=-limit;kernelCol<=limit; kernelCol++){
 					newPixel = newPixel + output_gaussian[row+kernelRow][col+kernelCol]*GxMask[limit+kernelRow][limit+kernelCol];
 					newPixel2 = newPixel2 + output_gaussian[row+kernelRow][col+kernelCol+1]*GxMask[limit+kernelRow][limit+kernelCol];
 					newPixel3 = newPixel3 + output_gaussian[row+kernelRow][col+kernelCol+2]*GxMask[limit+kernelRow][limit+kernelCol];
 					newPixel4 = newPixel4 + output_gaussian[row+kernelRow][col+kernelCol+3]*GxMask[limit+kernelRow][limit+kernelCol];
-
+					//newPixelx = newPixelx + output_gaussian[row+kernelRow][col+kernelCol]*GxMask[limit+kernelRow][limit+kernelCol];
 				}
 			}
 			Igx[row][col] = (int)(floor(newPixel));
@@ -371,11 +371,11 @@ int main() {
 
   canny();
   
-  //sobel();
+  sobel();
   
-  //nonSup();
+  nonSup();
   
-  //four();
+  four();
   
   write();
   
