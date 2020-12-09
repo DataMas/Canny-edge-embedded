@@ -154,7 +154,7 @@ void sobel()
 	
 	// compute Igx and Igy 
 	for (row=limit;row<=(M+limit);row++){
-		for (col=2;col<=(N+limit);col+=4){
+		for (col=limit;col<=(N+limit);col+=4){
 			newPixel = 0;
 			newPixel2 = 0;
 			newPixel3 = 0;
