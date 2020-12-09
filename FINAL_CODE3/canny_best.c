@@ -14,8 +14,8 @@
 #pragma arm section zidata="ram"
 int current[M][N];
 int output_gaussian[M+2][N+2];
-int Eo[M+2][N+2];
-int Es[M+2][N+2];
+int Eo[M][N];
+int Es[M][N];
 int Igx[M+2][N+2];
 int Igy[M+2][N+2];
 int Edges[M][N];
@@ -24,7 +24,6 @@ int GxMask[3][3];
 int GyMask[3][3];
 int NonMax[M][N];
 int temp[M+2][N+2];
-double lo, hi, mid;
 #pragma arm section
 
 int i, j, newPixel, newPixel2, newPixel3,newPixel4, newPixely, newPixel2y,newPixel3y,newPixel4y, row, col, kernelRow, kernelCol;
