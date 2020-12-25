@@ -11,8 +11,8 @@
  //config.stack_limit = 0x00100000;    
 
 /* works */
-config.heap_base   = 0x00260000;     
-config.stack_base  = 0x00460000;    
+config.heap_base   = 0x486284;     
+config.stack_base  = 0x492F8E;    
 
 
 /* factory defaults */
