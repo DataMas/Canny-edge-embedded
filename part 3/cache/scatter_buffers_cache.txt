@@ -1,0 +1,26 @@
+ROM 0x0 0x63A0
+{
+ROM 0x0 0x6380
+{
+*.o ( +RO )
+}
+DRAM 0x6380 0x41345C
+{
+* ( +ZI,+RW )
+}
+SRAM 0x41BEEC 0x757E0
+{
+* (ram)
+}
+CACHE 0x4916CC 0x13C8
+{
+* (cache)
+}
+
+}
+
+
+
+
+
+
