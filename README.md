@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <img src="https://github.com/DataMas/CA-epidemic-modeling/blob/main/images/file_icon.webp" alt="Logo" width="70" height="70">
+  <img src="https://github.com/DataMas/Embeded_Systems/blob/main/images/canny.PNG" alt="Logo" width="70" height="70">
   <h3 align="center">Canny algorithm on embeded system</h3>
 </p>
 
