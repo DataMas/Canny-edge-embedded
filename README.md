@@ -15,20 +15,16 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 The repository includes an implementation of Canny edge detection algorithm using C utilizing loop and memory optimizations.
+
 The project was implemented for the purposes of the Embedded Systems Design course of the 9th semester of DUTh.
 - More about DUTh and the Embedded Systems Design course: https://www.ee.duth.gr/en/course/embedded-systems-design/
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
-To get started make sure you have downloaded the CA file containing the code files.
-
-### Running experiments
-To run you wn experiments using this implementation of epidemic modeling:
-- Run spreading.m file to simulate an epidemic spreading without vaccination
-  - Configure population and virus characteristics variables
-- Run vaccination.m file to simulate the effects of vacination
-  - Configure population, virus and vaccination characteristics variables
+To get started make sure you have downloaded the Code file containing the code and image files.
+- Download Arm Developmtn Suite to Run the code
+- Download YUv Player to read the iamges
 
 <!-- CONTRIBUTING -->
 ## Contributing
