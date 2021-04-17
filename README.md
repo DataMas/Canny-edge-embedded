@@ -24,7 +24,7 @@ The project was implemented for the purposes of the Embedded Systems Design cour
 ## Getting Started
 To get started make sure you have downloaded the Code file containing the code and image files.
 - Download Arm Developmtn Suite to Run the experiments
-- - The code itsself can be compiled and used in any local IDE
+  - The code itsself can be compiled and used in any local IDE
 - Download YUv Player to read the iamges
 
 <!-- CONTRIBUTING -->
