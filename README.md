@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <img src="https://github.com/DataMas/Embeded_Systems/blob/main/images/file_icon.webp" alt="Logo" width="70" height="70">
-  <h3 align="center">Canny algorithm on embeded system</h3>
+  <h3 align="center">Canny algorithm on embedded system</h3>
 </p>
 
 
@@ -14,11 +14,10 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-The repository includes an algorithm for epidemic modeling based on the SIR model using Cellular Automata.
-The project was implemented for the purposes of the Research & Design of Complex Electronic Systeems course
-of the 8th semester of DUTh.
+The repository includes an implementation of Canny edge detection algorithm using C utilizing loop and memory optimizations.
+The project was implemented for the purposes of the Embedded Systems Design course of the 9th semester of DUTh.
+- More about DUTh and the Embedded Systems Design course: https://www.ee.duth.gr/en/course/embedded-systems-design/
 
-More about the SIR model: Measuring and Preventing COVID-19 Using the SIR Model and Machine Learning in Smart Health Care
 
 <!-- GETTING STARTED -->
 ## Getting Started
